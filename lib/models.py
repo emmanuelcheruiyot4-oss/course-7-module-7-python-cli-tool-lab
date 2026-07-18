@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 class Task:
     def __init__(self, title):
         self.title = title

@@ -1,57 +1,51 @@
 #!/usr/bin/env python3
 
 import argparse
-from models import Task, User
+from lib.models import Task, User
 
 # Global dictionary to store users and their tasks
 users = {}
 
 
 def add_task(args):
-    # Check if the user exists, if not, create one
     user = users.get(args.user)
+
     if user is None:
         user = User(args.user)
         users[args.user] = user
 
-    # Create a new Task with the given title
     task = Task(args.title)
-
-    # Add the task to the user's task list
     user.add_task(task)
 
 
 def complete_task(args):
-    # Look up the user by name
     user = users.get(args.user)
 
     if user is None:
         print("❌ User not found.")
         return
 
-    # Look up the task by title
     task = user.get_task_by_title(args.title)
 
-    if task:
-        # Mark the task as complete
-        task.complete()
-    else:
-        # Print appropriate error message if task not found
+    if task is None:
         print("❌ Task not found.")
+        return
+
+    task.complete()
 
 
-# CLI entry point
 def main():
     parser = argparse.ArgumentParser(description="Task Manager CLI")
     subparsers = parser.add_subparsers()
 
-    # Subparser for adding tasks
-    add_parser = subparsers.add_parser("add-task", help="Add a task for a user")
+    add_parser = subparsers.add_parser(
+        "add-task",
+        help="Add a task for a user"
+    )
     add_parser.add_argument("user")
     add_parser.add_argument("title")
     add_parser.set_defaults(func=add_task)
 
-    # Subparser for completing tasks
     complete_parser = subparsers.add_parser(
         "complete-task",
         help="Complete a user's task"
